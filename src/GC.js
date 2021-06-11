@@ -36,16 +36,24 @@ class GC {
                     });
 
                     const data = await page.evaluate(evaluateFunction).catch(async (errEvaluate) => {
+
+                        const pages = await browser.pages();
+                        await Promise.all(pages.map((page) => page.close()));
                         await browser.close();
+
                         return failure(errEvaluate);
                     });
 
+                    const pages = await browser.pages();
+                    await Promise.all(pages.map((page) => page.close()));
                     await browser.close();
 
                     success(data);
 
                 }).catch(async (errGoto) => {
 
+                    const pages = await browser.pages();
+                    await Promise.all(pages.map((page) => page.close()));
                     await browser.close();
 
                     failure(errGoto);
@@ -54,7 +62,11 @@ class GC {
             } catch (err) {
                 failure(err);
             } finally {
+
+                const pages = await browser.pages();
+                await Promise.all(pages.map((page) => page.close()));
                 await browser.close();
+
             }
 
         });
