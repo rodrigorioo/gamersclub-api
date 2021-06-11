@@ -21,31 +21,41 @@ class GC {
 
             const browser = await puppeteer.launch({
                 headless: true,
-                args:['--single-process', '--no-zygote',  '--no-sandbox'],
+                args: ['--single-process', '--no-zygote', '--no-sandbox'],
             });
-            const page = await browser.newPage();
-            await page.setExtraHTTPHeaders({
-                'Cookie': "gclubsess=" + this._sessionId,
-            });
-            await page.goto(finalUrl, {waitUntil: 'load', timeout: 10000}).then( async () => {
 
-                await page.waitForSelector(selector);
+            try {
+                const page = await browser.newPage();
+                await page.setExtraHTTPHeaders({
+                    'Cookie': "gclubsess=" + this._sessionId,
+                });
+                await page.goto(finalUrl, {waitUntil: 'load', timeout: 10000}).then(async () => {
 
-                const data = await page.evaluate(evaluateFunction).catch( async (errEvaluate) => {
+                    await page.waitForSelector(selector, {
+                        timeout: 10000,
+                    });
+
+                    const data = await page.evaluate(evaluateFunction).catch(async (errEvaluate) => {
+                        await browser.close();
+                        return failure(errEvaluate);
+                    });
+
                     await browser.close();
-                    return failure(errEvaluate);
+
+                    success(data);
+
+                }).catch(async (errGoto) => {
+
+                    await browser.close();
+
+                    failure(errGoto);
                 });
 
+            } catch (err) {
+                failure(err);
+            } finally {
                 await browser.close();
-
-                success(data);
-
-            }).catch( async (errGoto) => {
-
-                await browser.close();
-
-                failure(errGoto);
-            });
+            }
 
         });
     }
@@ -54,7 +64,7 @@ class GC {
 
         return new Promise( (success, failure) => {
 
-            this.responseData('campeonatos/csgo/' + tournamentId + '/partida/' + matchId, '#matchscore1', PageEvaluate.match).then( (responseData) => {
+            this.responseData('campeonatos/csgo/' + tournamentId + '/partida/' + matchId, '.internal-page', PageEvaluate.match).then( (responseData) => {
 
                 const match = new Match();
                 match.id = matchId;
