@@ -19,7 +19,10 @@ class GC {
 
             const finalUrl = this._url + url;
 
-            const browser = await puppeteer.launch({headless: true, args:['--no-sandbox']});
+            const browser = await puppeteer.launch({
+                headless: true,
+                args:['--single-process', '--no-zygote',  '--no-sandbox'],
+            });
             const page = await browser.newPage();
             await page.setExtraHTTPHeaders({
                 'Cookie': "gclubsess=" + this._sessionId,
@@ -40,7 +43,7 @@ class GC {
             }).catch( async (errGoto) => {
 
                 await browser.close();
-                
+
                 failure(errGoto);
             });
 
