@@ -14,6 +14,24 @@ class GC {
         this._url = url;
     }
 
+    launchBrowser () {
+        return new Promise( async (success, failure) => {
+
+            this._browser = await puppeteer.launch({
+                headless: true,
+                args: [
+                    '--single-process',
+                    '--no-zygote',
+                    '--no-sandbox',
+                ],
+            });
+
+            await this.browser.on('disconnect', this.launchBrowser);
+
+            success();
+        });
+
+    }
     initBrowser (browser = null) {
 
         return new Promise( async (success, failure) => {
@@ -22,14 +40,8 @@ class GC {
 
             if(!browser) {
 
-                this._browser = await puppeteer.launch({
-                    headless: true,
-                    args: [
-                        '--single-process',
-                        '--no-zygote',
-                        '--no-sandbox',
-                    ],
-                });
+                await this.launchBrowser();
+
                 this._browser_sended = false;
             }
 
