@@ -114,6 +114,8 @@ class GC {
 
                     await page.waitForSelector(selector, {
                         timeout: 10000,
+                    }).catch( (errWaitForSelector) => {
+                        return failure(errWaitForSelector);
                     });
 
                     await this.checkBrowserClose().catch( (errBrowser) => {
