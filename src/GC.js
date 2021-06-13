@@ -9,8 +9,48 @@ const Tournament = require('./Models/Tournament');
 class GC {
 
     constructor(sessionId, url = 'https://csgo.gamersclub.gg/') {
+
         this._sessionId = sessionId;
         this._url = url;
+    }
+
+    initBrowser (browser = null) {
+
+        return new Promise( async (success, failure) => {
+            this._browser = browser;
+            this._browser_sended = true;
+
+            if(!browser) {
+
+                this._browser = await puppeteer.launch({
+                    headless: true,
+                    args: [
+                        '--single-process',
+                        '--no-zygote',
+                        '--no-sandbox',
+                    ],
+                });
+                this._browser_sended = false;
+            }
+
+            success();
+        });
+    }
+
+    closeBrowser () {
+
+        return new Promise( async (success, failure) => {
+
+            const pages = await this.browser.pages();
+            await Promise.all(pages.map((page) => page.close()));
+
+            if(!this.browser_sended) {
+                await this.browser.close();
+            }
+
+            success();
+
+        });
     }
 
     responseData(url, selector, evaluateFunction) {
@@ -19,13 +59,8 @@ class GC {
 
             const finalUrl = this._url + url;
 
-            const browser = await puppeteer.launch({
-                headless: true,
-                args: ['--single-process', '--no-zygote', '--no-sandbox'],
-            });
-
             try {
-                const page = await browser.newPage();
+                const page = await this.browser.newPage();
                 await page.setExtraHTTPHeaders({
                     'Cookie': "gclubsess=" + this._sessionId,
                 });
@@ -37,35 +72,31 @@ class GC {
 
                     const data = await page.evaluate(evaluateFunction).catch(async (errEvaluate) => {
 
-                        const pages = await browser.pages();
-                        await Promise.all(pages.map((page) => page.close()));
-                        await browser.close();
+                        await this.closeBrowser();
 
                         return failure(errEvaluate);
                     });
 
-                    const pages = await browser.pages();
-                    await Promise.all(pages.map((page) => page.close()));
-                    await browser.close();
+                    await this.closeBrowser();
 
                     success(data);
 
                 }).catch(async (errGoto) => {
 
-                    const pages = await browser.pages();
-                    await Promise.all(pages.map((page) => page.close()));
-                    await browser.close();
+                    await this.closeBrowser();
 
                     failure(errGoto);
                 });
 
             } catch (err) {
+
+                await this.closeBrowser();
+
                 failure(err);
+
             } finally {
 
-                const pages = await browser.pages();
-                await Promise.all(pages.map((page) => page.close()));
-                await browser.close();
+                await this.closeBrowser();
 
             }
 
@@ -195,6 +226,22 @@ class GC {
 
     set sessionId(value) {
         this._sessionId = value;
+    }
+
+    get browser() {
+        return this._browser;
+    }
+
+    set browser(value) {
+        this._browser = value;
+    }
+
+    get browser_sended() {
+        return this._browser_sended;
+    }
+
+    set browser_sended(value) {
+        this._browser_sended = value;
     }
 }
 
