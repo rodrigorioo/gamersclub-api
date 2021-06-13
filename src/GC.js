@@ -14,6 +14,17 @@ class GC {
         this._url = url;
     }
 
+    checkBrowserClose () {
+        return new Promise( (success, failure) => {
+
+            if(this.browser) {
+                success();
+            } else {
+                failure("Browser closed");
+            }
+        });
+    }
+
     launchBrowser () {
         return new Promise( async (success, failure) => {
 
@@ -26,15 +37,19 @@ class GC {
                 ],
             });
 
-            await this.browser.on('disconnect', this.launchBrowser);
+            await this.browser.on('disconnect', () => {
+                this._browser = null;
+            });
 
             success();
         });
 
     }
+
     initBrowser (browser = null) {
 
         return new Promise( async (success, failure) => {
+
             this._browser = browser;
             this._browser_sended = true;
 
@@ -72,14 +87,37 @@ class GC {
             const finalUrl = this._url + url;
 
             try {
+
+                await this.checkBrowserClose().catch( (errBrowser) => {
+                    return failure(errBrowser);
+                });
+
                 const page = await this.browser.newPage();
+
+                await this.checkBrowserClose().catch( (errBrowser) => {
+                    return failure(errBrowser);
+                });
+
                 await page.setExtraHTTPHeaders({
                     'Cookie': "gclubsess=" + this._sessionId,
                 });
+
+                await this.checkBrowserClose().catch( (errBrowser) => {
+                    return failure(errBrowser);
+                });
+
                 await page.goto(finalUrl, {waitUntil: 'load', timeout: 10000}).then(async () => {
+
+                    await this.checkBrowserClose().catch( (errBrowser) => {
+                        return failure(errBrowser);
+                    });
 
                     await page.waitForSelector(selector, {
                         timeout: 10000,
+                    });
+
+                    await this.checkBrowserClose().catch( (errBrowser) => {
+                        return failure(errBrowser);
                     });
 
                     const data = await page.evaluate(evaluateFunction).catch(async (errEvaluate) => {
@@ -87,6 +125,10 @@ class GC {
                         await this.closeBrowser();
 
                         return failure(errEvaluate);
+                    });
+
+                    await this.checkBrowserClose().catch( (errBrowser) => {
+                        return failure(errBrowser);
                     });
 
                     await this.closeBrowser();
