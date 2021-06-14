@@ -37,7 +37,7 @@ class GC {
                 ],
             });
 
-            await this.browser.on('disconnect', () => {
+            await this.browser.on('disconnected', () => {
                 this._browser = null;
             });
 
