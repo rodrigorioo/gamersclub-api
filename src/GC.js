@@ -68,11 +68,13 @@ class GC {
 
         return new Promise( async (success, failure) => {
 
-            const pages = await this.browser.pages();
-            await Promise.all(pages.map((page) => page.close()));
+            if(this.browser) {
+                const pages = await this.browser.pages();
+                await Promise.all(pages.map((page) => page.close()));
 
-            if(!this.browser_sended) {
-                await this.browser.close();
+                if (!this.browser_sended) {
+                    await this.browser.close();
+                }
             }
 
             success();
