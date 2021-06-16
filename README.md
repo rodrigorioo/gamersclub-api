@@ -22,6 +22,8 @@ const GC = require('gamersclub-api');
 const gc = new GC(sessionId);
 ```
 
+Para ver detalladamente su funcionalidad, en la carpeta examples van a encontrar un ejemplo de cómo utilizarla correctamente.
+
 ## Obtener cookie de Gamers Club
 
 Una vez logueados en Gamers Club con nuestra cuenta de Steam, en Chrome realizamos lo siguiente:
@@ -36,6 +38,7 @@ Una vez logueados en Gamers Club con nuestra cuenta de Steam, en Chrome realizam
 
 | Nombre | Retorna |
 | ------ | ------ |
+| initBrowser(browser?) | Promise() |
 | getMatch(tournamentId, matchId) | Match() |
 | getTeam(teamId) | Team() |
 | getTeamMatches(teamId) | Team() with matches |
