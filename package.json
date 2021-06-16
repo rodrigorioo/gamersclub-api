@@ -1,6 +1,6 @@
 {
   "name": "gamersclub-api",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "Simple and private Gamers Club API",
   "main": "index.js",
   "scripts": {
