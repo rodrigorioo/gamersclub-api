@@ -177,8 +177,34 @@ function tournament () {
 
     const name = document.querySelector('.main-wrap h2.title').innerText;
 
+    const campInfo = document.querySelectorAll('.main-wrap .camp-info li');
+    const beginning = campInfo[2].querySelectorAll('.col')[1].innerText;
+    const ending = campInfo[3].querySelectorAll('.col')[1].innerText;
+    const prize = campInfo[10].querySelectorAll('.col')[1].innerText;
+
     return {
         name,
+        beginning,
+        ending,
+        prize,
+    };
+}
+
+function tournamentTable () {
+
+    const table = document.querySelector('.table-matches .bracket').innerHTML;
+
+    return {
+        table,
+    };
+}
+
+function tournamentGroups () {
+
+    const groups = document.querySelector('section#grupos .row').innerHTML;
+
+    return {
+        groups,
     };
 }
 
@@ -186,3 +212,5 @@ module.exports.match = match;
 module.exports.team = team;
 module.exports.teamMatches = teamMatches;
 module.exports.tournament = tournament;
+module.exports.tournamentTable = tournamentTable;
+module.exports.tournamentGroups = tournamentGroups;

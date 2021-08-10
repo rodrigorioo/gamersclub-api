@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 
 const PageEvaluate = require('./Traits/PageEvaluate');
+
 const Match = require('./Models/Match');
 const Team = require('./Models/Team');
 const Player = require('./Models/Player');
@@ -82,7 +83,7 @@ class GC {
         });
     }
 
-    responseData(url, selector, evaluateFunction) {
+    responseData(url, selector, evaluateFunction, clickFunctions = []) {
 
         return new Promise( async (success ,failure) => {
 
@@ -94,12 +95,14 @@ class GC {
                     return failure(errBrowser);
                 });
 
+                // OPEN NEW PAGE
                 const page = await this.browser.newPage();
 
                 await this.checkBrowserClose().catch( (errBrowser) => {
                     return failure(errBrowser);
                 });
 
+                // SET HEADERS
                 await page.setExtraHTTPHeaders({
                     'Cookie': "gclubsess=" + this._sessionId,
                 });
@@ -108,6 +111,7 @@ class GC {
                     return failure(errBrowser);
                 });
 
+                // GO TO THE PAGE
                 await page.goto(finalUrl, {waitUntil: 'load', timeout: 10000}).then(async () => {
 
                     await this.checkBrowserClose().catch( (errBrowser) => {
@@ -127,12 +131,47 @@ class GC {
                         return failure(errBrowser);
                     });
 
-                    const data = await page.evaluate(evaluateFunction).catch(async (errEvaluate) => {
+                    // GET DATA FOR PAGE
+                    let data = null;
+
+                    data = await page.evaluate(evaluateFunction).catch(async (errEvaluate) => {
 
                         await this.closeBrowser();
 
                         return failure(errEvaluate);
                     });
+
+                    if(clickFunctions.length > 0) {
+
+                        for (const clickFunction of clickFunctions) {
+
+                            let iClickFunction = clickFunctions.indexOf(clickFunction);
+
+                            page.setDefaultNavigationTimeout(90000);
+
+                            await page.evaluate((clickFunction) => {
+                                document.querySelector(clickFunction.element).click();
+                            }, clickFunction);
+
+                            await page.waitForSelector(clickFunction.selector, {
+                                timeout: 10000,
+                            }).catch( async (errWaitForSelector) => {
+
+                                await this.closeBrowser();
+
+                                return failure(errWaitForSelector);
+                            });
+
+                            const clickFunctionData = await page.evaluate(clickFunction.evaluate).catch(async (errEvaluate) => {
+
+                                await this.closeBrowser();
+
+                                return failure(errEvaluate);
+                            });
+
+                            data = {...data, ...clickFunctionData};
+                        }
+                    }
 
                     await this.checkBrowserClose().catch( (errBrowser) => {
                         return failure(errBrowser);
@@ -261,11 +300,27 @@ class GC {
     getTournament(tournamentId) {
         return new Promise( (success, failure) => {
 
-            this.responseData('campeonatos/csgo/' + tournamentId, '.main-wrap', PageEvaluate.tournament).then( (responseData) => {
+            this.responseData('campeonatos/csgo/' + tournamentId, '.main-wrap', PageEvaluate.tournament, [
+                {
+                    element: 'li[data-target="#tabela"]',
+                    selector: '.table-matches',
+                    evaluate: PageEvaluate.tournamentTable,
+                },
+                {
+                    element: 'li[data-target="#grupos"]',
+                    selector: '.group-name',
+                    evaluate: PageEvaluate.tournamentGroups,
+                },
+            ]).then( (responseData) => {
 
                 const tournament = new Tournament();
                 tournament.id = tournamentId;
                 tournament.name = responseData.name;
+                tournament.beginning = responseData.beginning;
+                tournament.ending = responseData.ending;
+                tournament.prize = responseData.prize;
+                tournament.groups = responseData.groups;
+                tournament.table = responseData.table;
 
                 success(tournament);
 

@@ -82,6 +82,11 @@ Una vez logueados en Gamers Club con nuestra cuenta de Steam, en Chrome realizam
 
 - String id - ID del torneo
 - String name - Nombre del torneo
+- String beginning - Inicio del torneo
+- String ending - Finalización del torneo
+- String prize - Premio
+- String groups - HTML de los grupos
+- String table - HTML de la tabla
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
