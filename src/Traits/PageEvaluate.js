@@ -190,21 +190,117 @@ function tournament () {
     };
 }
 
-function tournamentTable () {
+function tournamentGroups () {
 
-    const table = document.querySelector('.table-matches .bracket').innerHTML;
+    const groupsReturn = [];
+
+    const groups = document.querySelector('section#grupos .row');
+    const rows = groups.querySelectorAll('.row');
+
+    rows.forEach( (row, iRow) => {
+        const columns = row.querySelectorAll('.columns');
+
+        const addGroup = {};
+
+        columns.forEach( (column, iColumn) => {
+
+            const groupName = column.querySelector('h2.group-name');
+
+            addGroup['name'] = groupName.innerText;
+
+            const table = column.querySelector('.table-gc');
+            const trs = table.querySelectorAll('tbody tr');
+
+            const teams = [];
+            trs.forEach( (tr, iTr) => {
+
+                const tds = tr.querySelectorAll('td');
+
+                const image = tds[0].querySelector('img').getAttribute('src');
+                const teamName = tds[1].querySelector('a').innerText;
+                const teamCountry = 'https://gamersclub.com.br' + tds[1].querySelector('img').getAttribute('src');
+                const played = tds[2].innerText;
+                const victories = tds[3].innerText;
+                const defeats = tds[4].innerText;
+                const ties = tds[5].innerText;
+                const rounds_won = tds[6].innerText;
+                const rounds_lost = tds[7].innerText;
+                const round_difference = tds[8].innerText;
+                const points = tds[9].innerText;
+
+                const success = tr.classList.contains('success-team');
+
+                teams.push({
+                    image,
+                    teamName,
+                    teamCountry,
+                    played,
+                    victories,
+                    defeats,
+                    ties,
+                    rounds_won,
+                    rounds_lost,
+                    round_difference,
+                    points,
+                    success,
+                });
+            });
+
+            addGroup['teams'] = teams;
+        });
+
+        groupsReturn.push(addGroup);
+    });
 
     return {
-        table,
+        groups: JSON.stringify(groupsReturn),
     };
 }
 
-function tournamentGroups () {
+function tournamentTable () {
 
-    const groups = document.querySelector('section#grupos .row').innerHTML;
+    const tableReturn = [];
+
+    const bracket = document.querySelector('.table-matches .bracket');
+    const rounds = bracket.querySelectorAll('.round');
+
+    rounds.forEach( (round, iRound) => {
+
+        const roundName = round.querySelector('.tournament-round-title').innerText;
+
+        const addMatches = [];
+        const matches = round.querySelectorAll('.match');
+
+        matches.forEach( (match, iMatch) => {
+
+            const teams = match.querySelectorAll('.team');
+
+            const addMatch = [];
+
+            teams.forEach( (team, iTeam) => {
+
+                const teamName = team.querySelector('.label').innerText;
+                const score = team.querySelector('.score').innerText;
+                const win = team.classList.contains('win');
+
+                addMatch.push({
+                    teamName,
+                    score,
+                    win,
+                });
+            });
+
+            addMatches.push(addMatch);
+        });
+
+        tableReturn.push({
+            roundName,
+            matches: addMatches,
+        });
+    });
 
     return {
-        groups,
+        table: JSON.stringify(tableReturn),
     };
 }
 
@@ -212,5 +308,5 @@ module.exports.match = match;
 module.exports.team = team;
 module.exports.teamMatches = teamMatches;
 module.exports.tournament = tournament;
-module.exports.tournamentTable = tournamentTable;
 module.exports.tournamentGroups = tournamentGroups;
+module.exports.tournamentTable = tournamentTable;
