@@ -200,9 +200,9 @@ function tournamentGroups () {
     rows.forEach( (row, iRow) => {
         const columns = row.querySelectorAll('.columns');
 
-        const addGroup = {};
-
         columns.forEach( (column, iColumn) => {
+
+            const addGroup = {};
 
             const groupName = column.querySelector('h2.group-name');
 
@@ -247,9 +247,9 @@ function tournamentGroups () {
             });
 
             addGroup['teams'] = teams;
-        });
 
-        groupsReturn.push(addGroup);
+            groupsReturn.push(addGroup);
+        });
     });
 
     return {
