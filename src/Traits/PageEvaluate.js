@@ -15,7 +15,7 @@ function match () {
     const score1 = parseInt(document.querySelector('.header-event-match .box-event-match #matchscore1').innerText);
     const score2 = parseInt(document.querySelector('.header-event-match .box-event-match #matchscore2').innerText);
 
-    const finished = (!(!score1 && !score2 && !live));
+    const finished = (live) ? false : ( !(!score1 && !score2) );
 
     const htmlBestOf = document.querySelector('.header-event-match .box-event-match .event-match-info .best-of');
     htmlBestOf.removeChild(htmlBestOf.querySelector('i'));
