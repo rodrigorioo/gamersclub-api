@@ -2,7 +2,7 @@ const GC = require('../index');
 const vars = require('./vars');
 
 const sessionId = vars.sessionId;
-const tournamentId = '4719';
+const tournamentId = '5308';
 
 const gc = new GC(sessionId);
 gc.initBrowser().then( () => {

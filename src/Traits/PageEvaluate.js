@@ -195,62 +195,65 @@ function tournamentGroups () {
     const groupsReturn = [];
 
     const groups = document.querySelector('section#grupos .row');
-    const rows = groups.querySelectorAll('.row');
 
-    rows.forEach( (row, iRow) => {
-        const columns = row.querySelectorAll('.columns');
+    if(groups) {
+        const rows = groups.querySelectorAll('.row');
 
-        columns.forEach( (column, iColumn) => {
+        rows.forEach( (row, iRow) => {
+            const columns = row.querySelectorAll('.columns');
 
-            const addGroup = {};
+            columns.forEach( (column, iColumn) => {
 
-            const groupName = column.querySelector('h2.group-name');
+                const addGroup = {};
 
-            addGroup['name'] = groupName.innerText;
+                const groupName = column.querySelector('h2.group-name');
 
-            const table = column.querySelector('.table-gc');
-            const trs = table.querySelectorAll('tbody tr');
+                addGroup['name'] = groupName.innerText;
 
-            const teams = [];
-            trs.forEach( (tr, iTr) => {
+                const table = column.querySelector('.table-gc');
+                const trs = table.querySelectorAll('tbody tr');
 
-                const tds = tr.querySelectorAll('td');
+                const teams = [];
+                trs.forEach( (tr, iTr) => {
 
-                const image = tds[0].querySelector('img').getAttribute('src');
-                const teamName = tds[1].querySelector('a').innerText;
-                const teamCountry = 'https://gamersclub.com.br' + tds[1].querySelector('img').getAttribute('src');
-                const played = tds[2].innerText;
-                const victories = tds[3].innerText;
-                const defeats = tds[4].innerText;
-                const ties = tds[5].innerText;
-                const rounds_won = tds[6].innerText;
-                const rounds_lost = tds[7].innerText;
-                const round_difference = tds[8].innerText;
-                const points = tds[9].innerText;
+                    const tds = tr.querySelectorAll('td');
 
-                const success = tr.classList.contains('success-team');
+                    const image = tds[0].querySelector('img').getAttribute('src');
+                    const teamName = tds[1].querySelector('a').innerText;
+                    const teamCountry = 'https://gamersclub.com.br' + tds[1].querySelector('img').getAttribute('src');
+                    const played = tds[2].innerText;
+                    const victories = tds[3].innerText;
+                    const defeats = tds[4].innerText;
+                    const ties = tds[5].innerText;
+                    const rounds_won = tds[6].innerText;
+                    const rounds_lost = tds[7].innerText;
+                    const round_difference = tds[8].innerText;
+                    const points = tds[9].innerText;
 
-                teams.push({
-                    image,
-                    teamName,
-                    teamCountry,
-                    played,
-                    victories,
-                    defeats,
-                    ties,
-                    rounds_won,
-                    rounds_lost,
-                    round_difference,
-                    points,
-                    success,
+                    const success = tr.classList.contains('success-team');
+
+                    teams.push({
+                        image,
+                        teamName,
+                        teamCountry,
+                        played,
+                        victories,
+                        defeats,
+                        ties,
+                        rounds_won,
+                        rounds_lost,
+                        round_difference,
+                        points,
+                        success,
+                    });
                 });
+
+                addGroup['teams'] = teams;
+
+                groupsReturn.push(addGroup);
             });
-
-            addGroup['teams'] = teams;
-
-            groupsReturn.push(addGroup);
         });
-    });
+    }
 
     return {
         groups: JSON.stringify(groupsReturn),
@@ -262,42 +265,45 @@ function tournamentTable () {
     const tableReturn = [];
 
     const bracket = document.querySelector('.table-matches .bracket');
-    const rounds = bracket.querySelectorAll('.round');
 
-    rounds.forEach( (round, iRound) => {
+    if(bracket) {
+        const rounds = bracket.querySelectorAll('.round');
 
-        const roundName = round.querySelector('.tournament-round-title').innerText;
+        rounds.forEach((round, iRound) => {
 
-        const addMatches = [];
-        const matches = round.querySelectorAll('.match');
+            const roundName = round.querySelector('.tournament-round-title').innerText;
 
-        matches.forEach( (match, iMatch) => {
+            const addMatches = [];
+            const matches = round.querySelectorAll('.match');
 
-            const teams = match.querySelectorAll('.team');
+            matches.forEach((match, iMatch) => {
 
-            const addMatch = [];
+                const teams = match.querySelectorAll('.team');
 
-            teams.forEach( (team, iTeam) => {
+                const addMatch = [];
 
-                const teamName = team.querySelector('.label').innerText;
-                const score = team.querySelector('.score').innerText;
-                const win = team.classList.contains('win');
+                teams.forEach((team, iTeam) => {
 
-                addMatch.push({
-                    teamName,
-                    score,
-                    win,
+                    const teamName = team.querySelector('.label').innerText;
+                    const score = team.querySelector('.score').innerText;
+                    const win = team.classList.contains('win');
+
+                    addMatch.push({
+                        teamName,
+                        score,
+                        win,
+                    });
                 });
+
+                addMatches.push(addMatch);
             });
 
-            addMatches.push(addMatch);
+            tableReturn.push({
+                roundName,
+                matches: addMatches,
+            });
         });
-
-        tableReturn.push({
-            roundName,
-            matches: addMatches,
-        });
-    });
+    }
 
     return {
         table: JSON.stringify(tableReturn),
