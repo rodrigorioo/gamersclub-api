@@ -194,7 +194,7 @@ function tournamentGroups () {
 
     const groupsReturn = [];
 
-    const groups = document.querySelector('section#grupos .row');
+    const groups = document.querySelector('section#groups .row');
 
     if(groups) {
         const rows = groups.querySelectorAll('.row');

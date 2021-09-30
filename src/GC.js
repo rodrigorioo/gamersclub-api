@@ -303,13 +303,13 @@ class GC {
 
             this.responseData('campeonatos/csgo/' + tournamentId, '.main-wrap', PageEvaluate.tournament, [
                 {
-                    element: 'li[data-target="#tabela"]',
+                    element: 'li[data-target="#bracket"]',
                     selector: '.table-matches',
                     evaluate: PageEvaluate.tournamentTable,
                 },
                 {
-                    element: 'li[data-target="#grupos"]',
-                    selector: '.group-name',
+                    element: 'li[data-target="#groups"]',
+                    selector: '.groups',
                     evaluate: PageEvaluate.tournamentGroups,
                 },
             ]).then( (responseData) => {
