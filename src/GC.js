@@ -150,27 +150,30 @@ class GC {
 
                             page.setDefaultNavigationTimeout(90000);
 
-                            await page.evaluate((clickFunction) => {
-                                document.querySelector(clickFunction.element).click();
-                            }, clickFunction);
+                            if(await page.$(clickFunction.element)){
+                                await page.evaluate((clickFunction) => {
+                                    document.querySelector(clickFunction.element).click();
+                                }, clickFunction);
+    
+                                await page.waitForSelector(clickFunction.selector, {
+                                    timeout: 10000,
+                                }).catch( async (errWaitForSelector) => {
+    
+                                    await this.closeBrowser();
+    
+                                    return failure(errWaitForSelector);
+                                });
+    
+                                const clickFunctionData = await page.evaluate(clickFunction.evaluate).catch(async (errEvaluate) => {
+    
+                                    await this.closeBrowser();
+    
+                                    return failure(errEvaluate);
+                                });
+    
+                                data = {...data, ...clickFunctionData};
+                            }
 
-                            await page.waitForSelector(clickFunction.selector, {
-                                timeout: 10000,
-                            }).catch( async (errWaitForSelector) => {
-
-                                await this.closeBrowser();
-
-                                return failure(errWaitForSelector);
-                            });
-
-                            const clickFunctionData = await page.evaluate(clickFunction.evaluate).catch(async (errEvaluate) => {
-
-                                await this.closeBrowser();
-
-                                return failure(errEvaluate);
-                            });
-
-                            data = {...data, ...clickFunctionData};
                         }
                     }
 
