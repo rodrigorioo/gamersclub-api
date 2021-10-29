@@ -301,6 +301,31 @@ class GC {
         });
     }
 
+    getEndedTournaments(page) {
+        page > 1 ? page = 'page/' + page : page = '';
+        return new Promise( (success, failure) => {
+
+            this.responseData('campeonatos/csgo/finalizados/' + page, '.main-wrap', PageEvaluate.tournamentsEnded)
+            .then( (responseData) => {
+                
+                let camps = []
+
+                responseData.forEach((camp)=>{
+                    const tournament = new Tournament();
+                    tournament._id = camp.tournamentId;
+                    tournament._name = camp.name;
+                    tournament._beginning = camp.beginning;
+                    tournament._ending = camp.ending;
+
+                    camps.push(tournament);
+                })
+            
+                success(camps);
+
+            }).catch( (errResponseData) => failure(errResponseData));
+        });
+    }
+
     getTournament(tournamentId) {
         return new Promise( (success, failure) => {
 
