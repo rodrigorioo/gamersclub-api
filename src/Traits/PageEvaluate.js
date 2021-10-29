@@ -190,6 +190,30 @@ function tournament () {
     };
 }
 
+function tournamentsEnded () {
+    const table = document.querySelector("body > div.animsition > div.body-page.bg1.has-chat > div > div > section > div > div.columns.large-12.campeonatos > div > table")
+    const campsList = table.querySelectorAll('tr');
+    const camps = [];
+
+    let name = '';
+    let tournamentId = '';
+    let beginning = '';
+    let ending = '';
+
+    campsList.forEach((camp, index)=>{
+        if(camp.querySelector('.left') != null){
+            name = camp.querySelector('.left').textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim();
+            beginning = camp.querySelector("td:nth-child(4)").textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim();
+            ending = camp.querySelector("td:nth-child(5)").textContent.replace(/[\n\r]+|[\s]{2,}/g, ' ').trim();
+            tournamentId = camp.querySelector('.right > a').href.slice(-4);
+            camps.push({name: name, tournamentId: tournamentId, beginning: beginning, ending: ending});
+        }
+    })
+
+    return camps;
+
+}
+
 function tournamentGroups () {
 
     const groupsReturn = [];
@@ -314,5 +338,6 @@ module.exports.match = match;
 module.exports.team = team;
 module.exports.teamMatches = teamMatches;
 module.exports.tournament = tournament;
+module.exports.tournamentsEnded = tournamentsEnded;
 module.exports.tournamentGroups = tournamentGroups;
 module.exports.tournamentTable = tournamentTable;
