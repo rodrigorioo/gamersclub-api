@@ -43,6 +43,8 @@ Una vez logueados en Gamers Club con nuestra cuenta de Steam, en Chrome realizam
 | getTeam(teamId) | Team() |
 | getTeamMatches(teamId) | Team() with matches |
 | getTournament(tournamentId) | Tournament() |
+| getEndedTournaments(page) | ArrayList of Tournament() |
+
 
 ## Clases
 

@@ -150,27 +150,30 @@ class GC {
 
                             page.setDefaultNavigationTimeout(90000);
 
-                            await page.evaluate((clickFunction) => {
-                                document.querySelector(clickFunction.element).click();
-                            }, clickFunction);
+                            if(await page.$(clickFunction.element)){
+                                await page.evaluate((clickFunction) => {
+                                    document.querySelector(clickFunction.element).click();
+                                }, clickFunction);
+    
+                                await page.waitForSelector(clickFunction.selector, {
+                                    timeout: 10000,
+                                }).catch( async (errWaitForSelector) => {
+    
+                                    await this.closeBrowser();
+    
+                                    return failure(errWaitForSelector);
+                                });
+    
+                                const clickFunctionData = await page.evaluate(clickFunction.evaluate).catch(async (errEvaluate) => {
+    
+                                    await this.closeBrowser();
+    
+                                    return failure(errEvaluate);
+                                });
+    
+                                data = {...data, ...clickFunctionData};
+                            }
 
-                            await page.waitForSelector(clickFunction.selector, {
-                                timeout: 10000,
-                            }).catch( async (errWaitForSelector) => {
-
-                                await this.closeBrowser();
-
-                                return failure(errWaitForSelector);
-                            });
-
-                            const clickFunctionData = await page.evaluate(clickFunction.evaluate).catch(async (errEvaluate) => {
-
-                                await this.closeBrowser();
-
-                                return failure(errEvaluate);
-                            });
-
-                            data = {...data, ...clickFunctionData};
                         }
                     }
 
@@ -293,6 +296,31 @@ class GC {
                 });
 
                 success(team);
+
+            }).catch( (errResponseData) => failure(errResponseData));
+        });
+    }
+
+    getEndedTournaments(page) {
+        page > 1 ? page = 'page/' + page : page = '';
+        return new Promise( (success, failure) => {
+
+            this.responseData('campeonatos/csgo/finalizados/' + page, '.main-wrap', PageEvaluate.tournamentsEnded)
+            .then( (responseData) => {
+                
+                let camps = []
+
+                responseData.forEach((camp)=>{
+                    const tournament = new Tournament();
+                    tournament._id = camp.tournamentId;
+                    tournament._name = camp.name;
+                    tournament._beginning = camp.beginning;
+                    tournament._ending = camp.ending;
+
+                    camps.push(tournament);
+                })
+            
+                success(camps);
 
             }).catch( (errResponseData) => failure(errResponseData));
         });
