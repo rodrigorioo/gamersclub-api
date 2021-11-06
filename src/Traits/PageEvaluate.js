@@ -242,34 +242,36 @@ function tournamentGroups () {
 
                     const tds = tr.querySelectorAll('td');
 
-                    const image = tds[0].querySelector('img').getAttribute('src');
-                    const teamName = tds[1].querySelector('a').innerText;
-                    const teamCountry = 'https://gamersclub.com.br' + tds[1].querySelector('img').getAttribute('src');
-                    const played = tds[2].innerText;
-                    const victories = tds[3].innerText;
-                    const defeats = tds[4].innerText;
-                    const ties = tds[5].innerText;
-                    const rounds_won = tds[6].innerText;
-                    const rounds_lost = tds[7].innerText;
-                    const round_difference = tds[8].innerText;
-                    const points = tds[9].innerText;
+                    if(tds.length > 1) {
+                        const image = tds[0].querySelector('img').getAttribute('src');
+                        const teamName = tds[1].querySelector('a').innerText;
+                        const teamCountry = 'https://gamersclub.com.br' + tds[1].querySelector('img').getAttribute('src');
+                        const played = tds[2].innerText;
+                        const victories = tds[3].innerText;
+                        const defeats = tds[4].innerText;
+                        const ties = tds[5].innerText;
+                        const rounds_won = tds[6].innerText;
+                        const rounds_lost = tds[7].innerText;
+                        const round_difference = tds[8].innerText;
+                        const points = tds[9].innerText;
 
-                    const success = tr.classList.contains('success-team');
+                        const success = tr.classList.contains('success-team');
 
-                    teams.push({
-                        image,
-                        teamName,
-                        teamCountry,
-                        played,
-                        victories,
-                        defeats,
-                        ties,
-                        rounds_won,
-                        rounds_lost,
-                        round_difference,
-                        points,
-                        success,
-                    });
+                        teams.push({
+                            image,
+                            teamName,
+                            teamCountry,
+                            played,
+                            victories,
+                            defeats,
+                            ties,
+                            rounds_won,
+                            rounds_lost,
+                            round_difference,
+                            points,
+                            success,
+                        });
+                    }
                 });
 
                 addGroup['teams'] = teams;

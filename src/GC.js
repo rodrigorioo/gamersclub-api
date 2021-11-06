@@ -154,23 +154,23 @@ class GC {
                                 await page.evaluate((clickFunction) => {
                                     document.querySelector(clickFunction.element).click();
                                 }, clickFunction);
-    
+
                                 await page.waitForSelector(clickFunction.selector, {
                                     timeout: 10000,
                                 }).catch( async (errWaitForSelector) => {
-    
+
                                     await this.closeBrowser();
-    
+
                                     return failure(errWaitForSelector);
                                 });
-    
+
                                 const clickFunctionData = await page.evaluate(clickFunction.evaluate).catch(async (errEvaluate) => {
-    
+
                                     await this.closeBrowser();
-    
+
                                     return failure(errEvaluate);
                                 });
-    
+
                                 data = {...data, ...clickFunctionData};
                             }
 
@@ -307,7 +307,7 @@ class GC {
 
             this.responseData('campeonatos/csgo/finalizados/' + page, '.main-wrap', PageEvaluate.tournamentsEnded)
             .then( (responseData) => {
-                
+
                 let camps = []
 
                 responseData.forEach((camp)=>{
@@ -319,7 +319,7 @@ class GC {
 
                     camps.push(tournament);
                 })
-            
+
                 success(camps);
 
             }).catch( (errResponseData) => failure(errResponseData));
